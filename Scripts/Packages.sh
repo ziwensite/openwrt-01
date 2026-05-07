@@ -60,6 +60,7 @@ UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
 UPDATE_PACKAGE "passwall" "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
 UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 UPDATE_PACKAGE "luci-app-lucky" "gdy666/luci-app-lucky" "main"
+UPDATE_PACKAGE "luci-app-v2raya" "kenzok8/small-package" "main" "pkg" "v2raya"
 
 UPDATE_PACKAGE "luci-app-tailscale-community" "Tokisaki-Galaxy/luci-app-tailscale-community" "master"
 
@@ -79,6 +80,13 @@ UPDATE_PACKAGE "quickfile" "sbwml/luci-app-quickfile" "main"
 UPDATE_PACKAGE "timecontrol" "sirpdboy/luci-app-timecontrol" "main"
 UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "gecoosac luci-app-timewol luci-app-wolplus"
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
+
+UPDATE_PACKAGE "luci-app-store" "kenzok8/small-package" "main" "pkg" "taskd istore luci-lib-taskd luci-lib-xterm uci-lib-ipkg luci-compat app-store-ui"
+UPDATE_PACKAGE "luci-app-verysync" "kenzok8/small-package" "main" "pkg" "verysync"
+UPDATE_PACKAGE "luci-app-syncthing" "kenzok8/small-package" "main" "pkg" "syncthing"
+UPDATE_PACKAGE "luci-app-cloudflared" "kenzok8/small-package" "main" "pkg" "cloudflared"
+UPDATE_PACKAGE "luci-app-cifs-mount" "kenzok8/small-package" "main" "pkg" "cifs-utils kmod-fs-cifs"
+UPDATE_PACKAGE "luci-app-unishare" "kenzok8/small-package" "main" "pkg" "unishare"
 
 #更新软件包版本
 UPDATE_VERSION() {
