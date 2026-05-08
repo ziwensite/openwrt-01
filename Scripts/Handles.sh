@@ -82,3 +82,34 @@ if [ -f "$RUST_FILE" ]; then
 
 	cd $PKG_PATH && echo "rust has been fixed!"
 fi
+
+#调整dockerman菜单位置到第一层目录
+if [ -d *"dockerman"* ]; then
+	echo " " && cd ./luci-app-dockerman/
+
+	sed -i 's/"parent": "admin\/services"/"parent": "admin"/g' $(find ./ -type f -name "*.json")
+	sed -i 's/"order": [0-9]*/"order": 5/g' $(find ./ -type f -name "*.json")
+
+	cd $PKG_PATH && echo "dockerman menu position updated to root!"
+fi
+
+#调整代理插件菜单位置到VPN下面
+ADJUST_PROXY_TO_VPN() {
+    local PLUGIN_NAME=$1
+    local ORDER=$2
+    
+    if [ -d *"$PLUGIN_NAME"* ]; then
+        echo " " && cd ./$PLUGIN_NAME/
+        
+        sed -i 's/"parent": "admin\/services"/"parent": "admin\/vpn"/g' $(find ./ -type f -name "*.json" 2>/dev/null)
+        sed -i "s/\"order\": [0-9]*/\"order\": $ORDER/g" $(find ./ -type f -name "*.json" 2>/dev/null)
+        
+        cd $PKG_PATH && echo "$PLUGIN_NAME menu position updated to VPN!"
+    fi
+}
+
+ADJUST_PROXY_TO_VPN "luci-app-homeproxy" "10"
+ADJUST_PROXY_TO_VPN "luci-app-openclash" "15"
+ADJUST_PROXY_TO_VPN "luci-app-passwall" "20"
+ADJUST_PROXY_TO_VPN "luci-app-v2raya" "25"
+ADJUST_PROXY_TO_VPN "luci-app-tailscale-community" "30"
