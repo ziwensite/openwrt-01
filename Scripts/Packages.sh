@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2026 VIKINGYFY
 
-#安装和更新软件包
+# 安装和更新软件包
 UPDATE_PACKAGE() {
 	local PKG_NAME=$1
 	local PKG_REPO=$2
@@ -26,7 +26,7 @@ UPDATE_PACKAGE() {
 				echo "Delete directory: $DIR"
 			done <<< "$FOUND_DIRS"
 		else
-			echo "Not fonud directory: $NAME"
+			echo "Not found directory: $NAME"
 		fi
 	done
 
@@ -35,11 +35,38 @@ UPDATE_PACKAGE() {
 
 	# 处理克隆的仓库
 	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
-		find ./$REPO_NAME/*/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune -exec cp -rf {} ./ \;
+		# 更智能的查找方式，查找所有子目录
+		find ./$REPO_NAME/ -maxdepth 2 -type d \( -name "*$PKG_NAME*" -o -name "luci-app-$PKG_NAME*" \) -print0 | while IFS= read -r -d '' DIR; do
+			if [ -f "$DIR/Makefile" ]; then
+				cp -rf "$DIR" ./
+				echo "Copy package directory: $DIR"
+			fi
+		done
 		rm -rf ./$REPO_NAME/
 	elif [[ "$PKG_SPECIAL" == "name" ]]; then
 		mv -f $REPO_NAME $PKG_NAME
 	fi
+}
+
+# 从 small-package 只下载特定包的函数
+DOWNLOAD_FROM_SMALL_PACKAGE() {
+	local PKG_NAMES=("$@")
+	
+	echo " "
+	echo "Downloading specific packages from small-package..."
+	git clone --depth=1 --single-branch --branch main https://github.com/kenzok8/small-package.git temp_small_pkg
+	
+	for PKG_NAME in "${PKG_NAMES[@]}"; do
+		# 查找匹配的目录
+		find ./temp_small_pkg/ -maxdepth 1 -type d \( -name "$PKG_NAME" -o -name "luci-app-$PKG_NAME" \) -print0 | while IFS= read -r -d '' DIR; do
+			if [ -f "$DIR/Makefile" ]; then
+				cp -rf "$DIR" ./
+				echo "Copy package: $DIR"
+			fi
+		done
+	done
+	
+	rm -rf temp_small_pkg
 }
 
 # 调用示例
@@ -53,36 +80,12 @@ UPDATE_PACKAGE "aurora-config" "eamonxg/luci-app-aurora-config" "master"
 UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "master"
 UPDATE_PACKAGE "kucat-config" "sirpdboy/luci-app-kucat-config" "master"
 
-UPDATE_PACKAGE "luci-compat" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "quickstart" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-quickstart" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-nginxer" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "taskd" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "istore" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-lib-taskd" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-lib-xterm" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "uci-lib-ipkg" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "app-store-ui" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-store" "kenzok8/small-package" "main" "pkg"
-
-UPDATE_PACKAGE "verysync" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-verysync" "kenzok8/small-package" "main" "pkg"
-
-UPDATE_PACKAGE "syncthing" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-syncthing" "kenzok8/small-package" "main" "pkg"
-
-UPDATE_PACKAGE "cloudflared" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-cloudflared" "kenzok8/small-package" "main" "pkg"
-
-UPDATE_PACKAGE "cifs-utils" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-cifs-mount" "kenzok8/small-package" "main" "pkg"
-
-UPDATE_PACKAGE "webdav2" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "unishare" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-unishare" "kenzok8/small-package" "main" "pkg"
-
-UPDATE_PACKAGE "v2raya" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "luci-app-v2raya" "kenzok8/small-package" "main" "pkg"
+# 只下载需要的 small-package 包，节省空间
+DOWNLOAD_FROM_SMALL_PACKAGE "luci-compat" "taskd" "istore" "luci-lib-taskd" "luci-lib-xterm" \
+  "uci-lib-ipkg" "app-store-ui" "luci-app-store" "quickstart" "luci-app-quickstart" \
+  "luci-nginxer" "luci-lib-docker" "verysync" "luci-app-verysync" "syncthing" \
+  "luci-app-syncthing" "cloudflared" "luci-app-cloudflared" "webdav2" "unishare" \
+  "luci-app-unishare" "v2raya" "luci-app-v2raya" "cifs-utils" "luci-app-cifs-mount"
 
 UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "main"
 UPDATE_PACKAGE "momo" "nikkinikki-org/OpenWrt-momo" "main"
