@@ -48,25 +48,41 @@ UPDATE_PACKAGE() {
 	fi
 }
 
-# 从 small-package 只下载特定包的函数
+# 从 small-package 下载需要的包
 DOWNLOAD_FROM_SMALL_PACKAGE() {
-	local PKG_NAMES=("$@")
+	local TARGET_PKGS=("$@")
 	
 	echo " "
-	echo "Downloading specific packages from small-package..."
+	echo "Downloading packages from kenzok8/small-package..."
 	git clone --depth=1 --single-branch --branch main https://github.com/kenzok8/small-package.git temp_small_pkg
 	
-	for PKG_NAME in "${PKG_NAMES[@]}"; do
-		# 查找匹配的目录
-		find ./temp_small_pkg/ -maxdepth 1 -type d \( -name "$PKG_NAME" -o -name "luci-app-$PKG_NAME" \) -print0 | while IFS= read -r -d '' DIR; do
-			if [ -f "$DIR/Makefile" ]; then
+	local COPY_COUNT=0
+	local MISSED_COUNT=0
+	
+	for TARGET in "${TARGET_PKGS[@]}"; do
+		local FOUND=0
+		for DIR in ./temp_small_pkg/*/; do
+			[ -d "$DIR" ] || continue
+			local PKG_NAME=$(basename "$DIR")
+			[ -f "$DIR/Makefile" ] || continue
+			
+			if [ "$PKG_NAME" = "$TARGET" ]; then
 				cp -rf "$DIR" ./
-				echo "Copy package: $DIR"
+				COPY_COUNT=$((COPY_COUNT + 1))
+				FOUND=1
+				echo "Copied: $PKG_NAME"
+				break
 			fi
 		done
+		
+		if [ $FOUND -eq 0 ]; then
+			MISSED_COUNT=$((MISSED_COUNT + 1))
+			echo "NOT FOUND: $TARGET"
+		fi
 	done
 	
 	rm -rf temp_small_pkg
+	echo "Done: $COPY_COUNT copied, $MISSED_COUNT missed from small-package!"
 }
 
 # 调用示例

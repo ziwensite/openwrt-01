@@ -83,14 +83,20 @@ if [ -f "$RUST_FILE" ]; then
 	cd $PKG_PATH && echo "rust has been fixed!"
 fi
 
-#调整dockerman菜单位置到第一层目录
+#调整dockerman菜单位置到第一层目录并修改显示名称为"容器"
 if [ -d *"dockerman"* ]; then
 	echo " " && cd ./luci-app-dockerman/
-
-	sed -i 's/"parent": "admin\/services"/"parent": "admin"/g' $(find ./ -type f -name "*.json")
-	sed -i 's/"order": [0-9]*/"order": 5/g' $(find ./ -type f -name "*.json")
-
-	cd $PKG_PATH && echo "dockerman menu position updated to root!"
+	
+	# 查找并修改 JSON 菜单文件
+	if [ -f ./luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json ]; then
+		sed -i 's/"parent": "admin.services"/"parent": "admin"/g' ./luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
+		sed -i 's/"parent": "admin\/services"/"parent": "admin"/g' ./luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
+		sed -i 's/"order": [0-9]*/"order": 5/g' ./luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
+		sed -i 's/"title": "[^"]*"/"title": "容器"/g' ./luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
+		echo "dockerman menu updated!"
+	fi
+	
+	cd $PKG_PATH && echo "dockerman has been fixed!"
 fi
 
 #调整代理插件菜单位置到VPN下面
@@ -101,10 +107,17 @@ ADJUST_PROXY_TO_VPN() {
     if [ -d *"$PLUGIN_NAME"* ]; then
         echo " " && cd ./$PLUGIN_NAME/
         
-        sed -i 's/"parent": "admin\/services"/"parent": "admin\/vpn"/g' $(find ./ -type f -name "*.json" 2>/dev/null)
-        sed -i "s/\"order\": [0-9]*/\"order\": $ORDER/g" $(find ./ -type f -name "*.json" 2>/dev/null)
+        # 使用与 mini-diskmanager 相同的方式
+        local MENU_JSON=$(find ./ -type f -name "*.json" | grep -E "menu\.d|luci-app" | head -1)
         
-        cd $PKG_PATH && echo "$PLUGIN_NAME menu position updated to VPN!"
+        if [ -f "$MENU_JSON" ]; then
+            sed -i 's/"parent": "admin.services"/"parent": "admin.vpn"/g' "$MENU_JSON"
+            sed -i 's/"parent": "admin\/services"/"parent": "admin\/vpn"/g' "$MENU_JSON"
+            sed -i "s/\"order\": [0-9]*/\"order\": $ORDER/g" "$MENU_JSON"
+            echo "$PLUGIN_NAME menu position updated to VPN!"
+        fi
+        
+        cd $PKG_PATH
     fi
 }
 
