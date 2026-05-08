@@ -54,7 +54,6 @@ UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "master"
 UPDATE_PACKAGE "kucat-config" "sirpdboy/luci-app-kucat-config" "master"
 
 UPDATE_PACKAGE "luci-compat" "kenzok8/small-package" "main" "pkg"
-UPDATE_PACKAGE "vmease" "kenzok8/small-package" "main" "pkg"
 UPDATE_PACKAGE "quickstart" "kenzok8/small-package" "main" "pkg"
 UPDATE_PACKAGE "luci-app-quickstart" "kenzok8/small-package" "main" "pkg"
 UPDATE_PACKAGE "luci-nginxer" "kenzok8/small-package" "main" "pkg"

@@ -345,7 +345,6 @@ CONFIG_PACKAGE_luci-lib-xterm=y
 CONFIG_PACKAGE_uci-lib-ipkg=y
 CONFIG_PACKAGE_app-store-ui=y
 CONFIG_PACKAGE_luci-app-store=y
-CONFIG_PACKAGE_vmease=y
 CONFIG_PACKAGE_quickstart=y
 CONFIG_PACKAGE_luci-lib-docker=y
 CONFIG_PACKAGE_luci-app-quickstart=y
