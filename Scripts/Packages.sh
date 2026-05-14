@@ -97,8 +97,8 @@ UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "master"
 UPDATE_PACKAGE "kucat-config" "sirpdboy/luci-app-kucat-config" "master"
 
 # 只下载需要的 small-package 包，节省空间
-DOWNLOAD_FROM_SMALL_PACKAGE "luci-compat" "taskd" "istore" "luci-lib-taskd" "luci-lib-xterm" \
-  "uci-lib-ipkg" "app-store-ui" "luci-app-store" "quickstart" "luci-app-quickstart" \
+DOWNLOAD_FROM_SMALL_PACKAGE "luci-compat" "taskd" "luci-app-istorex" "luci-lib-taskd" "luci-lib-xterm" \
+  "luci-app-store" "quickstart" "luci-app-quickstart" \
   "luci-nginxer" "luci-lib-docker" "verysync" "luci-app-verysync" "syncthing" \
   "luci-app-syncthing" "cloudflared" "luci-app-cloudflared" "webdav2" "unishare" \
   "luci-app-unishare" "v2raya" "luci-app-v2raya" "cifs-utils" "luci-app-cifs-mount"
